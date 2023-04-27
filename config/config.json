@@ -1,0 +1,13 @@
+{
+  "api_urls": {
+    "open_ai": "https://api.openai.com/v1/images/generations"
+  },
+  "api_tokens": {
+    "discord": "MTA5OTgwMzc4NzExNzQ2MTYwNQ.G5BMKm.J7iMpHZuwXVjXEy5LcfPhNVFMoyxg8BZi5qu8Y",
+    "open_ai": "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"
+  },
+  "commands": {
+    "prefix": "!",
+    "generate_image": "img"
+  }
+}
