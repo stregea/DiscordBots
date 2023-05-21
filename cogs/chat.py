@@ -1,47 +1,8 @@
-import discord
 from discord.ext import commands
 from discord.ext.commands import Bot, Context, Cog
-import requests
 from requests import Response
-from lib import json_reader
-
-JSON = json_reader.read('config/config.json')  # todo: move to the lib directory
-API_URL = JSON['api_urls']['open_ai']['chat']
-API_KEY = JSON['api_tokens']['open_ai']
-PREFIX = JSON['commands']['prefix']
-COMMAND = JSON['commands']['chat']
-
-
-def generate_prompt(message: discord.Message) -> str:
-    """
-    Based on a discord message, parse the text to generate a prompt to send to the API.
-    :param message: The discord message to parse.
-    :return: A parsed message that serves as a prompt for the AI image generation.
-    """
-    # Remove the discord command.
-    command = [x for x in message.content.split(' ')]
-    command.remove(f'{PREFIX}{COMMAND}')
-    ret = ""
-
-    # Parse the input string
-    for token in command:
-        ret += f"{token} "
-
-    return ret
-
-
-def post_prompt(prompt: str, ctx: Context) -> Response:
-    """
-    Post a prompt to OpenAI's API to generate an image.
-    :param prompt: The prompt to send.
-    :return: A response from the API.
-    """
-    headers: dict = {'Content-Type': 'application/json', 'Authorization': f'Bearer {API_KEY}'}
-    data: dict = {
-        "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": prompt, "name": (str(ctx.author.name))}]
-    }
-    return requests.post(API_URL, json=data, headers=headers)
+from lib.settings import CHAT_COMMAND, CHAT_API_URL
+from lib.prompt import generate_prompt, post_prompt
 
 
 class ChatCog(Cog):
@@ -52,7 +13,7 @@ class ChatCog(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name=COMMAND)
+    @commands.command(name=CHAT_COMMAND)
     @commands.has_permissions(administrator=True)
     async def chat(self, ctx: Context) -> None:
         """
@@ -62,18 +23,31 @@ class ChatCog(Cog):
 
         :param ctx: The context from discord containing the user information and input.
         """
-        await ctx.send("Thinking of a response...")
+        await ctx.send(f'{ctx.author.mention}, thinking of a response...')
 
-        prompt: str = generate_prompt(ctx.message) + " limit to between 1 and 1,950 characters."
+        prompt: str = f'{generate_prompt(CHAT_COMMAND, ctx.message)} limit to between 1 and 1,950 characters.'
         print(f'{ctx.author}: {prompt}')
 
+        data: dict = {
+            "model": "gpt-3.5-turbo",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt,
+                    "name": (str(ctx.author.name))
+                }
+            ]
+        }
+
         try:
-            ai_response: Response = post_prompt(prompt, ctx)
+            ai_response: Response = post_prompt(CHAT_API_URL, data)
             try:
-                status: str = ai_response.json()['created']
-                print(ai_response.json())
+                response: dict = ai_response.json()
+                status: str = response['created']
+
                 if status is not None:
-                    await ctx.send(f'{ctx.author.mention}, {ai_response.json()["choices"][0]["message"]["content"]}')
+                    message_content = response["choices"][0]["message"]["content"]
+                    await ctx.send(f'{ctx.author.mention}, {message_content}')
 
             except KeyError:
                 error: str = ai_response.json()['error']['message']
