@@ -73,7 +73,7 @@ def post_prompt(prompt: str) -> Response:
     return requests.post(API_URL, json=data, headers=headers)
 
 
-class ImageDownloader(Cog):
+class ImageDownloaderCog(Cog):
     """
     Cog that will add functionality to the Juicecord bot to download AI generated images from OpenAI.
     """
@@ -120,4 +120,4 @@ async def setup(bot: Bot) -> None:
     This adds a cog to the main bot calling Bot.load_extention.
     :param bot: The bot to add the cog to.
     """
-    await bot.add_cog(ImageDownloader(bot))
+    await bot.add_cog(ImageDownloaderCog(bot))

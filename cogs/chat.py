@@ -58,7 +58,7 @@ class ChatCog(Cog):
         """
         Generate an AI image by connecting with the OpenAI API.
 
-        Command Example: !img Dog dancing
+        Command Example: !chat Hello, There!
 
         :param ctx: The context from discord containing the user information and input.
         """
