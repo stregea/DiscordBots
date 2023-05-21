@@ -1,42 +1,15 @@
-import os
 import discord
 from discord.ext import commands
 from discord.ext.commands import Bot, Context, Cog
 import requests
 from requests import Response
-import random
 from lib import json_reader
 
-JSON = json_reader.read('config/config.json')
-API_URL = JSON['api_urls']['open_ai']['image_generator']
+JSON = json_reader.read('config/config.json')  # todo: move to the lib directory
+API_URL = JSON['api_urls']['open_ai']['chat']
 API_KEY = JSON['api_tokens']['open_ai']
 PREFIX = JSON['commands']['prefix']
-COMMAND = JSON['commands']['generate_image']
-
-
-def download_image(image_response: Response) -> str:
-    """
-    Download an image from a url based on a Response.
-    :param image_response: The response containing the URL with the image to download.
-    :return: The name of the image.
-    """
-    img_name = f"{random.randint(0, 999999999)}.png"
-    img_data = requests.get(image_response.json()['data'][0]['url']).content
-
-    with open(img_name, 'wb') as handler:
-        handler.write(img_data)
-
-    return img_name
-
-
-def delete_image(image_name: str):
-    """
-    Delete the local image from
-    :param image_name:
-    :return:
-    """
-    if os.path.exists(image_name):
-        os.remove(image_name)
+COMMAND = JSON['commands']['chat']
 
 
 def generate_prompt(message: discord.Message) -> str:
@@ -57,7 +30,7 @@ def generate_prompt(message: discord.Message) -> str:
     return ret
 
 
-def post_prompt(prompt: str) -> Response:
+def post_prompt(prompt: str, ctx: Context) -> Response:
     """
     Post a prompt to OpenAI's API to generate an image.
     :param prompt: The prompt to send.
@@ -65,17 +38,15 @@ def post_prompt(prompt: str) -> Response:
     """
     headers: dict = {'Content-Type': 'application/json', 'Authorization': f'Bearer {API_KEY}'}
     data: dict = {
-        'prompt': prompt,
-        'n': 1,
-        'size': "512x512"
+        "model": "gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": prompt, "name": (str(ctx.author.name))}]
     }
-
     return requests.post(API_URL, json=data, headers=headers)
 
 
-class ImageDownloader(Cog):
+class ChatCog(Cog):
     """
-    Cog that will add functionality to the Juicecord bot to download AI generated images from OpenAI.
+    Cog that will add functionality to the Juicecord bot to allow with chatting with ChatGPT3.5.
     """
 
     def __init__(self, bot):
@@ -83,7 +54,7 @@ class ImageDownloader(Cog):
 
     @commands.command(name=COMMAND)
     @commands.has_permissions(administrator=True)
-    async def generate_image(self, ctx: Context) -> None:
+    async def chat(self, ctx: Context) -> None:
         """
         Generate an AI image by connecting with the OpenAI API.
 
@@ -91,27 +62,25 @@ class ImageDownloader(Cog):
 
         :param ctx: The context from discord containing the user information and input.
         """
-        await ctx.send("Generating image...")
+        await ctx.send("Thinking of a response...")
 
-        prompt: str = generate_prompt(ctx.message)
-        print(prompt)
+        prompt: str = generate_prompt(ctx.message) + " limit to between 1 and 1,950 characters."
+        print(f'{ctx.author}: {prompt}')
 
         try:
-            ai_response: Response = post_prompt(prompt)
+            ai_response: Response = post_prompt(prompt, ctx)
             try:
                 status: str = ai_response.json()['created']
-
+                print(ai_response.json())
                 if status is not None:
-                    img_name: str = download_image(ai_response)
-                    await ctx.send(f'{ctx.author.mention} your image has generated!', file=discord.File(img_name))
-                    delete_image(img_name)
+                    await ctx.send(f'{ctx.author.mention}, {ai_response.json()["choices"][0]["message"]["content"]}')
 
             except KeyError:
                 error: str = ai_response.json()['error']['message']
                 await ctx.send(f'{ctx.author.mention}, {error}')
 
-        except Exception:
-            await ctx.send(f'{ctx.author.mention}, unable to create your image :cry:')
+        except Exception as e:
+            await ctx.send(f'{ctx.author.mention}, {e} :cry:')
 
 
 async def setup(bot: Bot) -> None:
@@ -120,4 +89,4 @@ async def setup(bot: Bot) -> None:
     This adds a cog to the main bot calling Bot.load_extention.
     :param bot: The bot to add the cog to.
     """
-    await bot.add_cog(ImageDownloader(bot))
+    await bot.add_cog(ChatCog(bot))

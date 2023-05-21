@@ -1,6 +1,9 @@
 {
   "api_urls": {
-    "open_ai": "https://api.openai.com/v1/images/generations"
+    "open_ai": {
+      "image_generator": "https://api.openai.com/v1/images/generations",
+      "chat": "https://api.openai.com/v1/chat/completions"
+    }
   },
   "api_tokens": {
     "discord": "MTA5OTgwMzc4NzExNzQ2MTYwNQ.G5BMKm.J7iMpHZuwXVjXEy5LcfPhNVFMoyxg8BZi5qu8Y",
@@ -8,6 +11,7 @@
   },
   "commands": {
     "prefix": "!",
-    "generate_image": "img"
+    "generate_image": "img",
+    "chat": "chat"
   }
 }
