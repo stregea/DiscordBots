@@ -14,7 +14,7 @@ class ChatCog(Cog):
         self.bot = bot
 
     @commands.command(name=CHAT_COMMAND)
-    @commands.has_permissions(administrator=True)
+    # @commands.has_permissions(administrator=True)
     async def chat(self, ctx: Context) -> None:
         """
         Generate an AI image by connecting with the OpenAI API.
@@ -28,13 +28,15 @@ class ChatCog(Cog):
         prompt: str = f'{generate_prompt(CHAT_COMMAND, ctx.message)} limit to between 1 and 1,950 characters.'
         print(f'{ctx.author}: {prompt}')
 
+        # Remove any spaces from a name that will break the OpenAPI regex.
+        name: str = str(ctx.author.name).replace(' ', '')
         data: dict = {
             "model": "gpt-3.5-turbo",
             "messages": [
                 {
                     "role": "user",
                     "content": prompt,
-                    "name": (str(ctx.author.name))
+                    "name": name
                 }
             ]
         }

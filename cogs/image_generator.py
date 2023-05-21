@@ -44,7 +44,7 @@ class ImageDownloaderCog(Cog):
         self.bot = bot
 
     @commands.command(name=IMAGE_COMMAND)
-    @commands.has_permissions(administrator=True)
+    # @commands.has_permissions(administrator=True)
     async def generate_image(self, ctx: Context) -> None:
         """
         Generate an AI image by connecting with the OpenAI API.
