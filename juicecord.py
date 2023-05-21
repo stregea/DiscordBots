@@ -1,11 +1,8 @@
 import os
 import discord
 from discord.ext.commands import Bot
-from lib import json_reader
+from lib.settings import DISCORD_TOKEN, PREFIX
 
-JSON = json_reader.read('config/config.json')
-TOKEN = JSON['api_tokens']['discord']
-PREFIX = JSON['commands']['prefix']
 INTENTS = discord.Intents.all()
 
 bot = Bot(command_prefix=PREFIX, intents=INTENTS)
@@ -32,4 +29,4 @@ async def on_ready() -> None:
     print(f'{bot.user} has connected to Discord!')
 
 
-bot.run(TOKEN)
+bot.run(DISCORD_TOKEN)

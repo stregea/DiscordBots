@@ -56,7 +56,7 @@ class ImageDownloaderCog(Cog):
         await ctx.send(f'{ctx.author.mention}, generating your image...')
 
         prompt: str = generate_prompt(IMAGE_COMMAND, ctx.message)
-        print(prompt)
+        print(f'{ctx.author}: {prompt}')
 
         data: dict = {
             'prompt': prompt,
