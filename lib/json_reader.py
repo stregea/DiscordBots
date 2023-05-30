@@ -4,7 +4,7 @@ import json
 
 def read(json_config: str) -> dict:
     """
-    Read in a json file anc return it as a dictionary.
+    Read in a json file and return it as a dictionary.
     :param json_config: The configuration json file to read.
     :return: A dictionary containing the configuration json values.
     """

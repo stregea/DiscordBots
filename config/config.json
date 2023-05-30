@@ -12,6 +12,7 @@
   "commands": {
     "prefix": "!",
     "generate_image": "img",
-    "chat": "chat"
+    "chat": "chat",
+    "smite": "smite"
   }
 }
