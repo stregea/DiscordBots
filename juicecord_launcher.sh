@@ -1,5 +1,5 @@
 GITHUB_USERNAME="stregea"
-GITHUB_TOKEN="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"
+GITHUB_TOKEN="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"
 
 echo "hello, world!"
 if [ ! -d "bots" ]; then
