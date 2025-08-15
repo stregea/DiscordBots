@@ -1,7 +1,7 @@
 GITHUB_USERNAME="stregea"
-GITHUB_TOKEN="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"
+GITHUB_TOKEN=""
 
-echo "hello, world!"
+echo "This is supposed to setup the Juicecord discord bot on server startup. Not yet complete."
 if [ ! -d "bots" ]; then
     git reset --hard
     git fetch
