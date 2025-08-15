@@ -6,8 +6,8 @@
     }
   },
   "api_tokens": {
-    "discord": "MTA5OTgwMzc4NzExNzQ2MTYwNQ.G5BMKm.J7iMpHZuwXVjXEy5LcfPhNVFMoyxg8BZi5qu8Y",
-    "open_ai": "sk-proj-M4V7MQID7ny2ntNs87xsT3BlbkFJzPz9EA1EC2bg05bwox4Q"
+    "discord": "",
+    "open_ai": ""
   },
   "commands": {
     "prefix": "!",
